@@ -205,21 +205,25 @@ const App = () => {
                 <IconYoutube />
               </div>
               <div>
-                <h1 className="text-2xl font-black tracking-tighter italic uppercase leading-none">Titler</h1>
-                <span className="text-[9px] font-bold tracking-[0.4em] text-red-100 uppercase opacity-70">Expert Cockpit</span>
+                <h1 className="text-2xl font-black tracking-tighter italic uppercase leading-none">THE ARCHITECT</h1>
+                <span className="text-[9px] font-bold tracking-[0.4em] text-red-100 uppercase opacity-70">CTR ENGINEERING COCKPIT</span>
               </div>
             </div>
 
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold leading-tight uppercase tracking-tight border-l-4 border-white pl-4">Rules</h2>
+              <h2 className="text-2xl font-bold leading-tight uppercase tracking-tight border-l-4 border-white pl-4">Directives</h2>
               <div className="space-y-3">
                 <div className="flex items-start gap-3 p-3 bg-black/10 rounded-xl border border-white/10 backdrop-blur-md">
                   <IconZap size={14} className="mt-0.5" />
-                  <div className="text-[11px] font-medium text-red-50">Under 50 Characters</div>
+                  <div className="text-[11px] font-medium text-red-50">Rule 1: &lt; 50 Char Tolerance</div>
                 </div>
                 <div className="flex items-start gap-3 p-3 bg-black/10 rounded-xl border border-white/10 backdrop-blur-md">
                   <div className="w-3.5 h-3.5 mt-0.5 bg-white text-red-700 text-[9px] font-black flex items-center justify-center rounded-full">!</div>
-                  <div className="text-[11px] font-medium text-red-50 italic">No AI-Speak Patterns</div>
+                  <div className="text-[11px] font-medium text-red-50 italic">Rule 2: Zero Marketing Friction</div>
+                </div>
+                <div className="flex items-start gap-3 p-3 bg-black/10 rounded-xl border border-white/10 backdrop-blur-md">
+                  <div className="w-3.5 h-3.5 mt-0.5 bg-white text-red-700 text-[9px] font-black flex items-center justify-center rounded-full">⚓</div>
+                  <div className="text-[11px] font-medium text-red-50">Rule 3: Visual Anchor Integration</div>
                 </div>
               </div>
             </div>
