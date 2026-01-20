@@ -108,22 +108,44 @@ const App = () => {
 
         // PARSE: The API returns the whole thread object. We need to extract the actual output.
         // Based on the user logs, the output is in `result.thread.variables.output.value` which is a string JSON.
+        // PARSE: The API returns the whole thread object. We need to extract the actual output.
+        // Based on the user logs, the output is in `result.thread.variables.output.value` which is a string JSON.
         let parsedOutput = result;
-        if (result.thread && result.thread.variables && result.thread.variables.output) {
-          try {
-            // Access nested value. It might be a JSON string or an object depending on how MindStudio wraps it.
-            const rawValue = result.thread.variables.output.value;
-            // If rawValue is a string that looks like JSON, parse it.
-            parsedOutput = (typeof rawValue === 'string') ? JSON.parse(rawValue) : rawValue;
 
-            // If parsedOutput has a nested 'output' property (based on the screenshot: { output: { titles: [...] } })
-            if (parsedOutput.output) {
+        try {
+          if (result.thread) {
+            // Strategy 1: Check thread variables (primary)
+            if (result.thread.variables && result.thread.variables.output) {
+              const rawValue = result.thread.variables.output.value;
+              parsedOutput = (typeof rawValue === 'string') ? JSON.parse(rawValue) : rawValue;
+            }
+
+            // Strategy 2: Unwrap if it is inside another 'output' key (common in some flows)
+            if (parsedOutput && parsedOutput.output) {
               parsedOutput = parsedOutput.output;
             }
-          } catch (parseError) {
-            console.error("Error parsing nested output:", parseError);
-            // Fallback to showing everything if parsing fails
+
+            // Strategy 3: Detailed search for 'titles' if simple extraction failed
+            if (!parsedOutput.titles && result.thread.posts) {
+              const posts = result.thread.posts;
+              // Search backwards for the most recent message with 'titles'
+              for (let i = posts.length - 1; i >= 0; i--) {
+                const post = posts[i];
+                // Check chat messages from 'system' or 'assistant'
+                if (post.type === 'chatMessage' && post.chatMessage && (post.chatMessage.source === 'system' || post.chatMessage.source === 'assistant')) {
+                  try {
+                    const content = JSON.parse(post.chatMessage.content);
+                    if (content.titles) {
+                      parsedOutput = content;
+                      break;
+                    }
+                  } catch (e) { /* ignore non-json content */ }
+                }
+              }
+            }
           }
+        } catch (parseError) {
+          console.error("Manual parsing failed, reverting to full result", parseError);
         }
 
         setResultDisplay(parsedOutput);
