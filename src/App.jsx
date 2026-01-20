@@ -44,6 +44,19 @@ const IconZap = ({ size = 14, className = "text-white" }) => (
   </svg>
 );
 
+const IconCopy = ({ size = 14, className = "text-white" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+  </svg>
+);
+
+const IconCheck = ({ size = 14, className = "text-white" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <polyline points="20 6 9 17 4 12"></polyline>
+  </svg>
+);
+
 const App = () => {
   const vars = useTemplateVariables() || {};
 
@@ -55,6 +68,7 @@ const App = () => {
   const [tone, setTone] = useState(vars.tone || 'Viral');
   const [loading, setLoading] = useState(false);
   const [resultDisplay, setResultDisplay] = useState(null);
+  const [copiedIndex, setCopiedIndex] = useState(null); // -1 for "Copy All"
 
   const tones = [
     { id: 'Viral', icon: '🔥', color: 'bg-orange-600', glow: 'shadow-orange-500/40', desc: 'Curiosity gaps' },
@@ -62,6 +76,12 @@ const App = () => {
     { id: 'Story', icon: '✨', color: 'bg-purple-600', glow: 'shadow-purple-500/40', desc: 'Transformation' },
     { id: 'SEO', icon: '🔍', color: 'bg-emerald-600', glow: 'shadow-emerald-500/40', desc: 'Keyword Focus' },
   ];
+
+  const handleCopy = (text, index) => {
+    navigator.clipboard.writeText(text);
+    setCopiedIndex(index);
+    setTimeout(() => setCopiedIndex(null), 2000);
+  };
 
   const handleGenerate = async () => {
     if (!topic) return;
@@ -338,21 +358,41 @@ const App = () => {
 
           {resultDisplay && (
             <div className="mt-8 p-6 bg-white/5 rounded-2xl border border-white/10 animate-fade-in">
-              <h3 className="text-lg font-bold mb-6 text-white uppercase tracking-wider flex items-center gap-2">
-                <IconZap size={18} className="text-yellow-400" />
-                Generated Titles
-              </h3>
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                  <IconZap size={18} className="text-yellow-400" />
+                  Generated Titles
+                </h3>
+                {resultDisplay.titles && Array.isArray(resultDisplay.titles) && (
+                  <button
+                    onClick={() => handleCopy(resultDisplay.titles.join('\n'), -1)}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[10px] font-bold uppercase tracking-wider text-slate-400 hover:text-white transition-all border border-white/5 hover:border-white/10"
+                  >
+                    {copiedIndex === -1 ? <IconCheck size={12} className="text-green-500" /> : <IconCopy size={12} />}
+                    {copiedIndex === -1 ? 'Copied' : 'Copy All'}
+                  </button>
+                )}
+              </div>
 
               {resultDisplay.titles && Array.isArray(resultDisplay.titles) ? (
                 <ul className="space-y-3">
                   {resultDisplay.titles.map((title, index) => (
-                    <li key={index} className="flex items-start gap-4 p-4 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] transition-colors border border-white/5 group">
-                      <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-red-500/10 text-red-500 text-[10px] font-black group-hover:bg-red-500 group-hover:text-white transition-all">
-                        {index + 1}
-                      </span>
-                      <span className="text-sm text-slate-200 font-medium leading-relaxed selection:bg-red-500/30">
-                        {title}
-                      </span>
+                    <li key={index} className="flex items-center justify-between gap-4 p-4 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] transition-colors border border-white/5 group">
+                      <div className="flex items-start gap-4">
+                        <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-red-500/10 text-red-500 text-[10px] font-black group-hover:bg-red-500 group-hover:text-white transition-all">
+                          {index + 1}
+                        </span>
+                        <span className="text-sm text-slate-200 font-medium leading-relaxed selection:bg-red-500/30">
+                          {title}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => handleCopy(title, index)}
+                        className="p-2 opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-white"
+                        title="Copy to clipboard"
+                      >
+                        {copiedIndex === index ? <IconCheck size={14} className="text-green-500" /> : <IconCopy size={14} />}
+                      </button>
                     </li>
                   ))}
                 </ul>
