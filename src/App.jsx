@@ -113,37 +113,34 @@ const App = () => {
         let parsedOutput = result;
 
         try {
-          if (result.thread) {
-            // Strategy 1: Check thread variables (primary)
-            if (result.thread.variables && result.thread.variables.output) {
-              const rawValue = result.thread.variables.output.value;
-              parsedOutput = (typeof rawValue === 'string') ? JSON.parse(rawValue) : rawValue;
-            }
-
-            // Strategy 2: Unwrap if it is inside another 'output' key (common in some flows)
-            if (parsedOutput && parsedOutput.output) {
-              parsedOutput = parsedOutput.output;
-            }
-
-            // Strategy 3: Detailed search for 'titles' if simple extraction failed
-            if (!parsedOutput.titles && result.thread.posts) {
-              const posts = result.thread.posts;
-              // Search backwards for the most recent message with 'titles'
-              for (let i = posts.length - 1; i >= 0; i--) {
-                const post = posts[i];
-                // Check chat messages from 'system' or 'assistant'
-                if (post.type === 'chatMessage' && post.chatMessage && (post.chatMessage.source === 'system' || post.chatMessage.source === 'assistant')) {
-                  try {
-                    const content = JSON.parse(post.chatMessage.content);
-                    if (content.titles) {
-                      parsedOutput = content;
-                      break;
-                    }
-                  } catch (e) { /* ignore non-json content */ }
-                }
-              }
+          // Priority 1: Check result.result (standard Developer API output)
+          // Look for either result.result.output.titles or result.result.titles
+          if (result.result) {
+            if (result.result.output) {
+              parsedOutput = (typeof result.result.output === 'string')
+                ? JSON.parse(result.result.output)
+                : result.result.output;
+            } else if (result.result.titles) {
+              parsedOutput = result.result;
             }
           }
+
+          // Fallback: Check thread history if not found in result
+          if ((!parsedOutput || !parsedOutput.titles) && result.thread) {
+            // ... (keep existing strategies if needed, or simplfiy) ...
+            if (result.thread.variables && result.thread.variables.output) {
+              const rawValue = result.thread.variables.output.value;
+              const temp = (typeof rawValue === 'string') ? JSON.parse(rawValue) : rawValue;
+              if (temp.output) parsedOutput = temp.output;
+              else parsedOutput = temp;
+            }
+          }
+
+          // Final cleanup: Ensure we have the "titles" array directly accessible if possible
+          if (parsedOutput && parsedOutput.output && parsedOutput.output.titles) {
+            parsedOutput = parsedOutput.output;
+          }
+
         } catch (parseError) {
           console.error("Manual parsing failed, reverting to full result", parseError);
         }
@@ -341,10 +338,29 @@ const App = () => {
 
           {resultDisplay && (
             <div className="mt-8 p-6 bg-white/5 rounded-2xl border border-white/10 animate-fade-in">
-              <h3 className="text-lg font-bold mb-4 text-white uppercase tracking-wider">Generated Results</h3>
-              <pre className="whitespace-pre-wrap text-sm text-slate-300 font-mono overflow-x-auto">
-                {typeof resultDisplay === 'string' ? resultDisplay : JSON.stringify(resultDisplay, null, 2)}
-              </pre>
+              <h3 className="text-lg font-bold mb-6 text-white uppercase tracking-wider flex items-center gap-2">
+                <IconZap size={18} className="text-yellow-400" />
+                Generated Titles
+              </h3>
+
+              {resultDisplay.titles && Array.isArray(resultDisplay.titles) ? (
+                <ul className="space-y-3">
+                  {resultDisplay.titles.map((title, index) => (
+                    <li key={index} className="flex items-start gap-4 p-4 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] transition-colors border border-white/5 group">
+                      <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-red-500/10 text-red-500 text-[10px] font-black group-hover:bg-red-500 group-hover:text-white transition-all">
+                        {index + 1}
+                      </span>
+                      <span className="text-sm text-slate-200 font-medium leading-relaxed selection:bg-red-500/30">
+                        {title}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <pre className="whitespace-pre-wrap text-sm text-slate-300 font-mono overflow-x-auto">
+                  {typeof resultDisplay === 'string' ? resultDisplay : JSON.stringify(resultDisplay, null, 2)}
+                </pre>
+              )}
             </div>
           )}
         </div>
