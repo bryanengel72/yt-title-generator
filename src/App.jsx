@@ -69,6 +69,14 @@ const App = () => {
   const [loading, setLoading] = useState(false);
   const [resultDisplay, setResultDisplay] = useState(null);
   const [copiedIndex, setCopiedIndex] = useState(null); // -1 for "Copy All"
+  const resultsRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (resultDisplay && resultsRef.current) {
+      resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [resultDisplay]);
+
 
   const tones = [
     { id: 'Viral', icon: '🔥', color: 'bg-orange-600', glow: 'shadow-orange-500/40', desc: 'Curiosity gaps' },
@@ -400,7 +408,7 @@ const App = () => {
           )}
 
           {resultDisplay && (
-            <div className="mt-8 p-6 bg-white/5 rounded-2xl border border-white/10 animate-fade-in">
+            <div ref={resultsRef} className="mt-8 p-6 bg-white/5 rounded-2xl border border-white/10 animate-fade-in scroll-mt-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-bold text-white uppercase tracking-wider flex items-center gap-2">
                   <IconZap size={18} className="text-yellow-400" />
