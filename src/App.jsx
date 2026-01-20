@@ -173,6 +173,12 @@ const App = () => {
               if (typeof t === 'string') return { youtube_title: t, thumbnail_text: null };
               return t;
             });
+
+            // Sort by rank if available
+            parsedOutput.titles.sort((a, b) => {
+              if (a.rank && b.rank) return a.rank - b.rank;
+              return 0;
+            });
           }
 
         } catch (parseError) {
@@ -419,28 +425,40 @@ const App = () => {
               {resultDisplay.titles && Array.isArray(resultDisplay.titles) ? (
                 <ul className="space-y-3">
                   {resultDisplay.titles.map((title, index) => (
-                    <li key={index} className="flex items-center justify-between gap-4 p-4 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] transition-colors border border-white/5 group">
+                    <li key={index} className="flex items-start justify-between gap-4 p-4 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] transition-colors border border-white/5 group">
                       <div className="flex items-start gap-4 flex-1">
-                        <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-red-500/10 text-red-500 text-[10px] font-black group-hover:bg-red-500 group-hover:text-white transition-all">
-                          {index + 1}
+                        <span className={`flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full text-[10px] font-black transition-all ${title.rank <= 3 ? 'bg-yellow-500 text-slate-900 shadow-lg shadow-yellow-500/20' : 'bg-red-500/10 text-red-500 group-hover:bg-red-500 group-hover:text-white'
+                          }`}>
+                          {title.rank || index + 1}
                         </span>
-                        <div className="flex flex-col gap-1 w-full">
+                        <div className="flex flex-col gap-2 w-full">
                           <span className="text-sm text-slate-200 font-bold leading-relaxed selection:bg-red-500/30">
                             {title.youtube_title}
                           </span>
-                          {title.thumbnail_text && (
-                            <div className="flex items-center gap-2 mt-1">
-                              <span className="text-[9px] font-black text-slate-500 uppercase tracking-wider">Thumbnail Anchor:</span>
-                              <span className="text-[11px] text-yellow-500 font-mono bg-yellow-500/10 px-2 py-0.5 rounded border border-yellow-500/20">
-                                {title.thumbnail_text}
-                              </span>
-                            </div>
-                          )}
+
+                          <div className="flex flex-wrap gap-2 items-center">
+                            {title.thumbnail_text && (
+                              <div className="flex items-center gap-2">
+                                <span className="text-[9px] font-black text-slate-500 uppercase tracking-wider">THUMBNAIL:</span>
+                                <span className="text-[10px] text-yellow-500 font-mono bg-yellow-500/10 px-2 py-0.5 rounded border border-yellow-500/20">
+                                  {title.thumbnail_text}
+                                </span>
+                              </div>
+                            )}
+                            {title.ctr_rationale && (
+                              <div className="flex items-center gap-2 pl-2 border-l border-white/10">
+                                <span className="text-[9px] font-black text-slate-500 uppercase tracking-wider">WHY IT WORKS:</span>
+                                <span className="text-[10px] text-slate-400 italic">
+                                  {title.ctr_rationale}
+                                </span>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                       <button
                         onClick={() => handleCopy(title.youtube_title, index)}
-                        className="p-2 opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-white"
+                        className="p-2 opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-white self-start"
                         title="Copy to clipboard"
                       >
                         {copiedIndex === index ? <IconCheck size={14} className="text-green-500" /> : <IconCopy size={14} />}
