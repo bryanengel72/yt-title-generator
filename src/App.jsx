@@ -156,9 +156,23 @@ const App = () => {
             }
           }
 
-          // Final cleanup: Ensure we have the "titles" array directly accessible if possible
-          if (parsedOutput && parsedOutput.output && parsedOutput.output.titles) {
+          // Final cleanup: Normalization
+          // 1. Ensure we have the "titles" array directly accessible if possible
+          if (parsedOutput && parsedOutput.output && Array.isArray(parsedOutput.output)) {
+            // Case: output is directly the array of objects (based on user JSON snippet)
+            parsedOutput = { titles: parsedOutput.output };
+          } else if (parsedOutput && parsedOutput.output && parsedOutput.output.titles) {
+            // Case: output is object with titles key
             parsedOutput = parsedOutput.output;
+          }
+
+          // 2. Ensure titles is always an array of objects for consistent rendering
+          // Convert string titles to objects to unify the data structure
+          if (parsedOutput && Array.isArray(parsedOutput.titles)) {
+            parsedOutput.titles = parsedOutput.titles.map(t => {
+              if (typeof t === 'string') return { youtube_title: t, thumbnail_text: null };
+              return t;
+            });
           }
 
         } catch (parseError) {
@@ -388,7 +402,12 @@ const App = () => {
                 </h3>
                 {resultDisplay.titles && Array.isArray(resultDisplay.titles) && (
                   <button
-                    onClick={() => handleCopy(resultDisplay.titles.join('\n'), -1)}
+                    onClick={() => {
+                      const allText = resultDisplay.titles
+                        .map(t => `${t.youtube_title}${t.thumbnail_text ? ` [Thumb: ${t.thumbnail_text}]` : ''}`)
+                        .join('\n');
+                      handleCopy(allText, -1);
+                    }}
                     className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[10px] font-bold uppercase tracking-wider text-slate-400 hover:text-white transition-all border border-white/5 hover:border-white/10"
                   >
                     {copiedIndex === -1 ? <IconCheck size={12} className="text-green-500" /> : <IconCopy size={12} />}
@@ -401,16 +420,26 @@ const App = () => {
                 <ul className="space-y-3">
                   {resultDisplay.titles.map((title, index) => (
                     <li key={index} className="flex items-center justify-between gap-4 p-4 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] transition-colors border border-white/5 group">
-                      <div className="flex items-start gap-4">
+                      <div className="flex items-start gap-4 flex-1">
                         <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-red-500/10 text-red-500 text-[10px] font-black group-hover:bg-red-500 group-hover:text-white transition-all">
                           {index + 1}
                         </span>
-                        <span className="text-sm text-slate-200 font-medium leading-relaxed selection:bg-red-500/30">
-                          {title}
-                        </span>
+                        <div className="flex flex-col gap-1 w-full">
+                          <span className="text-sm text-slate-200 font-bold leading-relaxed selection:bg-red-500/30">
+                            {title.youtube_title}
+                          </span>
+                          {title.thumbnail_text && (
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-[9px] font-black text-slate-500 uppercase tracking-wider">Thumbnail Anchor:</span>
+                              <span className="text-[11px] text-yellow-500 font-mono bg-yellow-500/10 px-2 py-0.5 rounded border border-yellow-500/20">
+                                {title.thumbnail_text}
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                       <button
-                        onClick={() => handleCopy(title, index)}
+                        onClick={() => handleCopy(title.youtube_title, index)}
                         className="p-2 opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-white"
                         title="Copy to clipboard"
                       >
