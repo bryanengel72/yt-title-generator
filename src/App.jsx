@@ -326,6 +326,25 @@ const App = () => {
             </div>
 
             <button
+              onClick={() => {
+                setTopic('');
+                setKeyPoints('');
+                setMainTakeaway('');
+                setTargetAudience('');
+                setResultDisplay(null);
+                setTone('Viral');
+                setDescriptionCount('10');
+              }}
+              className="px-6 py-5 rounded-2xl font-bold uppercase tracking-wider text-[10px] sm:text-[11px] transition-all bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 border border-white/5 hover:border-white/10"
+              title="Reset Form"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                <path d="M3 3v5h5" />
+              </svg>
+            </button>
+
+            <button
               onClick={handleGenerate}
               disabled={loading || !topic}
               className={`flex-1 group relative overflow-hidden rounded-2xl py-5 px-4 font-black uppercase tracking-wider text-[10px] sm:text-[11px] transition-all whitespace-nowrap
