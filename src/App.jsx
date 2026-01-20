@@ -189,7 +189,7 @@ const App = () => {
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
                 placeholder="The core video subject..."
-                className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all min-h-[70px] text-sm font-medium"
+                className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all min-h-[70px] text-[11px]"
               />
             </div>
 
