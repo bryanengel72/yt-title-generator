@@ -71,21 +71,28 @@ const App = () => {
       // Trigger the webhook
       // Use proxy in dev to avoid CORS, direct URL in prod
       const webhookUrl = import.meta.env.DEV
-        ? '/api/developer/v2/apps/run-webhook/main-ff90e155/be73f64d-9f84-48d5-b7c2-e3e45ec96687'
-        : 'https://v1.mindstudio-api.com/developer/v2/apps/run-webhook/main-ff90e155/be73f64d-9f84-48d5-b7c2-e3e45ec96687';
+        ? '/api/developer/v2/agents/run'
+        : 'https://v1.mindstudio-api.com/developer/v2/agents/run';
 
       const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: {
+          'Authorization': 'Bearer skOLsDjnxz0Iks4wYgyuM8GmYUkkWaMeIaUyceW60YCUmoGKuUi8c0GYQc2c0iSEGcuWSUC806Aow6g0uuAWwG4',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          topic,
-          key_points: keyPoints,
-          target_audience: targetAudience,
-          main_takeaway: mainTakeaway,
-          description_count: parseInt(descriptionCount, 10),
-          tone: tone
+          agentId: '606f273e-7fc0-44a9-835a-dfc50f6429b4',
+          workflow: 'Main',
+          variables: {
+            webhookParams: {
+              topic,
+              key_points: keyPoints,
+              target_audience: targetAudience,
+              main_takeaway: mainTakeaway,
+              description_count: parseInt(descriptionCount, 10),
+              tone: tone
+            }
+          },
         }),
       });
 
