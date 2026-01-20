@@ -54,6 +54,7 @@ const App = () => {
   const [descriptionCount, setDescriptionCount] = useState(vars.description_count || '10');
   const [tone, setTone] = useState(vars.tone || 'Viral');
   const [loading, setLoading] = useState(false);
+  const [resultDisplay, setResultDisplay] = useState(null);
 
   const tones = [
     { id: 'Viral', icon: '🔥', color: 'bg-orange-600', glow: 'shadow-orange-500/40', desc: 'Curiosity gaps' },
@@ -65,6 +66,7 @@ const App = () => {
   const handleGenerate = async () => {
     if (!topic) return;
     setLoading(true);
+    setResultDisplay(null);
     try {
       // Trigger the webhook
       const response = await fetch('https://v1.mindstudio-api.com/developer/v2/apps/run-webhook/main-ff90e155/be73f64d-9f84-48d5-b7c2-e3e45ec96687', {
@@ -88,6 +90,7 @@ const App = () => {
 
       const result = await response.json();
       console.log("Webhook result:", result);
+      setResultDisplay(result);
 
       // Keep original bridge submit as backup or if needed for other internals, 
       // otherwise this effectively replaces it for the button action.
@@ -263,12 +266,22 @@ const App = () => {
             </button>
           </div>
 
+
           {loading && (
             <div className="flex flex-col items-center gap-2 pt-4 animate-pulse">
               <div className="w-full max-w-[200px] h-1 bg-white/10 rounded-full overflow-hidden relative">
                 <div className="h-full bg-red-600 animate-[loading_2s_ease-in-out_infinite]" style={{ width: '40%' }}></div>
               </div>
               <span className="text-[10px] font-black text-red-500 uppercase tracking-[0.4em]">Calibrating CTR patterns...</span>
+            </div>
+          )}
+
+          {resultDisplay && (
+            <div className="mt-8 p-6 bg-white/5 rounded-2xl border border-white/10 animate-fade-in">
+              <h3 className="text-lg font-bold mb-4 text-white uppercase tracking-wider">Generated Results</h3>
+              <pre className="whitespace-pre-wrap text-sm text-slate-300 font-mono overflow-x-auto">
+                {typeof resultDisplay === 'string' ? resultDisplay : JSON.stringify(resultDisplay, null, 2)}
+              </pre>
             </div>
           )}
         </div>
@@ -278,6 +291,10 @@ const App = () => {
         @keyframes loading {
           0% { transform: translateX(-100%); }
           100% { transform: translateX(250%); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
     </div>
