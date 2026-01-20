@@ -84,7 +84,7 @@ const App = () => {
           key_points: keyPoints,
           target_audience: targetAudience,
           main_takeaway: mainTakeaway,
-          description_count: descriptionCount,
+          description_count: parseInt(descriptionCount, 10),
           tone: tone
         }),
       });
