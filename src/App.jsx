@@ -90,7 +90,8 @@ const App = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`Webhook failed: ${response.status} ${response.statusText}`);
+        const errorText = await response.text();
+        throw new Error(`Webhook failed: ${response.status} ${response.statusText} - ${errorText}`);
       }
 
       const text = await response.text();
