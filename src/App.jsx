@@ -105,7 +105,28 @@ const App = () => {
       try {
         const result = text ? JSON.parse(text) : { message: "Success (No content)" };
         console.log("Webhook result:", result);
-        setResultDisplay(result);
+
+        // PARSE: The API returns the whole thread object. We need to extract the actual output.
+        // Based on the user logs, the output is in `result.thread.variables.output.value` which is a string JSON.
+        let parsedOutput = result;
+        if (result.thread && result.thread.variables && result.thread.variables.output) {
+          try {
+            // Access nested value. It might be a JSON string or an object depending on how MindStudio wraps it.
+            const rawValue = result.thread.variables.output.value;
+            // If rawValue is a string that looks like JSON, parse it.
+            parsedOutput = (typeof rawValue === 'string') ? JSON.parse(rawValue) : rawValue;
+
+            // If parsedOutput has a nested 'output' property (based on the screenshot: { output: { titles: [...] } })
+            if (parsedOutput.output) {
+              parsedOutput = parsedOutput.output;
+            }
+          } catch (parseError) {
+            console.error("Error parsing nested output:", parseError);
+            // Fallback to showing everything if parsing fails
+          }
+        }
+
+        setResultDisplay(parsedOutput);
       } catch (e) {
         console.warn("Response was not JSON:", text);
         setResultDisplay(text || "Webhook triggered successfully.");
