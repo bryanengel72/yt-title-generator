@@ -213,12 +213,11 @@ const App = () => {
 
             <div className="relative group">
               <label className="absolute -top-2.5 left-4 px-2 bg-[#0f172a] text-[10px] font-black text-slate-400 uppercase tracking-widest z-10">4. Target Profile</label>
-              <input
-                type="text"
+              <textarea
                 value={targetAudience}
                 onChange={(e) => setTargetAudience(e.target.value)}
                 placeholder="Who are we calling out?"
-                className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-4 text-white text-[11px] focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all"
+                className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-4 text-white text-[11px] focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all min-h-[70px]"
               />
             </div>
           </div>
