@@ -66,14 +66,32 @@ const App = () => {
     if (!topic) return;
     setLoading(true);
     try {
-      await submit({
-        topic,
-        key_points: keyPoints,
-        target_audience: targetAudience,
-        main_takeaway: mainTakeaway,
-        description_count: descriptionCount,
-        tone: tone
+      // Trigger the webhook
+      const response = await fetch('https://v1.mindstudio-api.com/developer/v2/apps/run-webhook/main-ff90e155/be73f64d-9f84-48d5-b7c2-e3e45ec96687', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          topic,
+          key_points: keyPoints,
+          target_audience: targetAudience,
+          main_takeaway: mainTakeaway,
+          description_count: descriptionCount,
+          tone: tone
+        }),
       });
+
+      if (!response.ok) {
+        throw new Error(`Webhook failed: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Webhook result:", result);
+
+      // Keep original bridge submit as backup or if needed for other internals, 
+      // otherwise this effectively replaces it for the button action.
+      // await submit({...});
     } catch (error) {
       console.error("Submission failed:", error);
     } finally {
@@ -215,8 +233,8 @@ const App = () => {
                     key={val}
                     onClick={() => setDescriptionCount(val)}
                     className={`w-9 h-9 rounded-xl text-[10px] font-bold transition-all ${descriptionCount === val
-                        ? 'bg-red-500 text-white shadow-lg'
-                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                      ? 'bg-red-500 text-white shadow-lg'
+                      : 'text-slate-400 hover:text-white hover:bg-white/5'
                       }`}
                   >
                     {val}
