@@ -69,7 +69,12 @@ const App = () => {
     setResultDisplay(null);
     try {
       // Trigger the webhook
-      const response = await fetch('https://v1.mindstudio-api.com/developer/v2/apps/run-webhook/main-ff90e155/be73f64d-9f84-48d5-b7c2-e3e45ec96687', {
+      // Use proxy in dev to avoid CORS, direct URL in prod
+      const webhookUrl = import.meta.env.DEV
+        ? '/api/developer/v2/apps/run-webhook/main-ff90e155/be73f64d-9f84-48d5-b7c2-e3e45ec96687'
+        : 'https://v1.mindstudio-api.com/developer/v2/apps/run-webhook/main-ff90e155/be73f64d-9f84-48d5-b7c2-e3e45ec96687';
+
+      const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -85,18 +90,25 @@ const App = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`Webhook failed: ${response.status}`);
+        throw new Error(`Webhook failed: ${response.status} ${response.statusText}`);
       }
 
-      const result = await response.json();
-      console.log("Webhook result:", result);
-      setResultDisplay(result);
+      const text = await response.text();
+      try {
+        const result = text ? JSON.parse(text) : { message: "Success (No content)" };
+        console.log("Webhook result:", result);
+        setResultDisplay(result);
+      } catch (e) {
+        console.warn("Response was not JSON:", text);
+        setResultDisplay(text || "Webhook triggered successfully.");
+      }
 
       // Keep original bridge submit as backup or if needed for other internals, 
       // otherwise this effectively replaces it for the button action.
       // await submit({...});
     } catch (error) {
       console.error("Submission failed:", error);
+      setResultDisplay({ error: error.message });
     } finally {
       setLoading(false);
     }
