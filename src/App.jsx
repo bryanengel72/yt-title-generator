@@ -300,8 +300,8 @@ const App = () => {
               <textarea
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
-                placeholder="The core video subject..."
-                className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all min-h-[70px] text-[11px]"
+                placeholder="e.g. Why most SaaS startups fail in the first year..."
+                className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all min-h-[70px] text-[11px] font-medium"
               />
             </div>
 
@@ -311,8 +311,8 @@ const App = () => {
                 <textarea
                   value={keyPoints}
                   onChange={(e) => setKeyPoints(e.target.value)}
-                  placeholder="Key hooks..."
-                  className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-4 text-white text-[11px] placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all min-h-[100px]"
+                  placeholder="e.g. 1. Focusing on features vs problems. 2. Ignoring churn..."
+                  className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all min-h-[100px] text-[11px] font-medium"
                 />
               </div>
               <div className="relative group">
@@ -320,8 +320,8 @@ const App = () => {
                 <textarea
                   value={mainTakeaway}
                   onChange={(e) => setMainTakeaway(e.target.value)}
-                  placeholder="The 'aha' moment..."
-                  className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-4 text-white text-[11px] placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all min-h-[100px]"
+                  placeholder="e.g. Retention is the new acquisition..."
+                  className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all min-h-[100px] text-[11px] font-medium"
                 />
               </div>
             </div>
@@ -331,8 +331,8 @@ const App = () => {
               <textarea
                 value={targetAudience}
                 onChange={(e) => setTargetAudience(e.target.value)}
-                placeholder="Who are we calling out?"
-                className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-4 text-white text-[11px] focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all min-h-[70px]"
+                placeholder="e.g. Early-stage B2B SaaS Founders..."
+                className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all min-h-[70px] text-[11px] font-medium"
               />
             </div>
           </div>
